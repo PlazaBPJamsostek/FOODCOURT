@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Esok Kita Akan Kembali - Visual Novel Premium</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030508;
+            color: #f8fafc;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+        /* BACKGROUND LORONG 3D PERSPEKTIF - Hanya 1 Gambar Menembus Ruang */
+        .tunnel-bg {
+            background-image: linear-gradient(to bottom, rgba(3, 5, 8, 0.3) 0%, rgba(3, 5, 8, 0.9) 100%), 
+                              url('https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            transform: scale(1.2);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        /* Glassmorphism Generasi Baru */
+        .cyber-panel {
+            background: rgba(6, 10, 18, 0.65);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            box-shadow: 0 25px 70px -10px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 10px; }
+    </style>
+</head>
+<body class="flex flex-col justify-between relative overflow-hidden select-none">
+
+    <div class="absolute inset-0 tunnel-bg z-0" id="bg-core"></div>
+
+    <header class="w-full max-w-3xl mx-auto px-4 pt-4 flex flex-col items-center z-10 text-center gap-1">
+        <h1 class="cyber-font text-lg sm:text-2xl font-black tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 drop-shadow-[0_4px_15px_rgba(245,158,11,0.3)]">
+            ESOK KITA AKAN KEMBALI
+        </h1>
+        <div class="flex flex-wrap justify-center items-center gap-1.5 text-[10px] sm:text-xs text-slate-400 tracking-wider">
+            <span>By <strong class="text-slate-200">Jose Natanael</strong></span>
+            <span class="text-slate-600">•</span>
+            <a href="https://instagram.com/Nath4nahel_" target="_blank" class="text-amber-400 hover:underline">@Nath4nahel_</a>
+        </div>
+    </header>
+
+    <main class="w-full max-w-3xl mx-auto px-4 mb-4 z-10 flex flex-col justify-end">
+        <div class="cyber-panel rounded-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[300px] sm:min-h-[340px] relative overflow-hidden">
+            
+            <div class="w-full flex flex-col gap-2 mb-3">
+                <div class="flex justify-between items-center text-[10px] sm:text-xs tracking-widest uppercase font-semibold">
+                    <span id="chapter-title" class="text-amber-400 cyber-font">MEMUAT DATA...</span>
+                    <span id="page-indicator" class="text-slate-400 font-mono bg-white/5 px-2 py-0.5 rounded-full">0/0</span>
+                </div>
+                <div class="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <div class="flex-grow flex items-center overflow-y-auto custom-scroll max-h-[140px] sm:max-h-[160px] pr-1 my-2">
+                <p id="story-text" class="text-[13px] sm:text-[15px] leading-[1.8] sm:leading-[1.9] text-slate-100 font-normal tracking-wide text-justify w-full"></p>
+            </div>
+
+            <div id="info-badge" class="hidden mb-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-[11px] sm:text-xs text-amber-200 items-start gap-2.5 animate-fadeIn">
+                <div class="bg-amber-500/20 p-1 rounded-lg text-amber-400 font-bold cyber-font text-[9px]">INFO</div>
+                <div class="leading-relaxed"><span id="info-content"></span></div>
+            </div>
+
+            <div id="warning-box" class="hidden mb-3 bg-red-950/40 border border-red-500/20 rounded-xl p-3 text-[11px] sm:text-xs text-red-200 items-start gap-2.5">
+                <div class="bg-red-500/20 p-1 rounded-lg text-red-400 font-bold cyber-font text-[9px] animate-pulse">WARNING</div>
+                <div class="leading-relaxed"><span id="warning-text"></span></div>
+            </div>
+
+            <div class="flex justify-between items-center pt-3 border-t border-white/5 gap-2">
+                <button id="btn-prev" onclick="changePage(-1)" class="px-3.5 py-2 text-xs font-semibold rounded-lg border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 active:scale-95 transition disabled:opacity-0">
+                    KEMBALI
+                </button>
+                
+                <div class="flex gap-2">
+                    <button id="btn-explain" onclick="toggleExplanation()" class="hidden px-3.5 py-2 text-xs font-bold rounded-lg bg-blue-600/20 border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 active:scale-95 transition">
+                        PENJELASAN BAB
+                    </button>
+                    
+                    <button id="btn-next" onclick="changePage(1)" class="px-4 py-2 text-xs font-bold tracking-wider rounded-lg bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 hover:brightness-110 active:scale-95 shadow-md transition">
+                        LANJUT →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full max-w-3xl mx-auto px-4 pb-4 z-10 flex flex-col gap-3">
+        <div class="cyber-panel rounded-xl p-3 flex flex-col sm:flex-row gap-2 items-center">
+            <span class="text-[11px] font-bold cyber-font text-amber-500/90 shrink-0 uppercase tracking-wider">Kotak Saran Pembaca :</span>
+            <form id="feedback-form" onsubmit="sendFeedback(event)" class="w-full flex gap-2">
+                <input id="feedback-input" type="text" placeholder="Tulis masukan, kritik, atau saran Anda di sini..." required class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition">
+                <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] px-4 py-1.5 rounded-lg shrink-0 transition">KIRIM</button>
+            </form>
+        </div>
+        
+        <div class="text-center text-[10px] text-slate-600 font-medium">
+            © 2026 Jose Natanael. All Rights Reserved.
+        </div>
+    </footer>
+
+    <div id="modal-ep2" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="cyber-panel max-w-md w-full rounded-2xl p-6 text-center border border-amber-500 flex flex-col items-center gap-4">
+            <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-xl font-bold cyber-font">!</div>
+            <h3 class="cyber-font text-lg font-bold tracking-wider text-amber-400 uppercase">Akses Terkunci!</h3>
+            <p class="text-xs leading-relaxed text-slate-300">
+                Kelanjutan cerita **Season 2 / Next Episode** sedang dalam proses perancangan sistem aplikasi. Kamu **Wajib Follow** akun Instagram resmi penulis terlebih dahulu untuk mendapatkan notifikasi rilis dan membuka kunci bab selanjutnya.
+            </p>
+            <div class="w-full flex flex-col gap-2 mt-2">
+                <a href="https://instagram.com/Nath4nahel_" target="_blank" onclick="unlockFollowStep()" class="w-full bg-gradient-to-r from-pink-600 to-amber-500 text-white font-bold text-xs py-2.5 rounded-xl transition hover:brightness-110 shadow-lg">
+                    FOLLOW INSTAGRAM @Nath4nahel_
+                </a>
+                <button onclick="closeModal()" class="w-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white text-xs py-2.5 rounded-xl transition">
+                    Kembali Ke Menu Utama
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const storyData = [
+            { chapter: "Bab 1: Perkenalan", text: "Dia adalah pemuda yang tidak pernah menyerah dengan kerasnya hidup, bernama Nata. Pria tangguh yang lahir pada tanggal 30 Agustus 2004 ini memulai takdirnya dari sebuah perjuangan panjang. Ayah dan ibu Nata menikah pada tahun 2002, hingga akhirnya Nata lahir ke dunia dua tahun setelahnya. Namun takdir memukulnya begitu cepat,. Nata yang baru lahir dan masih sangat kecil, sudah harus kehilangan sosok pelindung,. Ayahnya wafat akibat sakit jantung setelah terjatuh di kamar mandi. Di tengah duka mendalam, sang ibu menggendong Nata yang masih bayi sambil menangis pilu dan berbisik: 'Ayah kamu sudah tidak ada...' ", explanation: "Konon menurut cerita para tetangga, Nata dilahirkan di Pasar Telo, Magelang. Beberapa hari sejak kepergian sang ayah, desas-desus mistis menyelimuti kampung halamannya. Waktu kecil, Nata diceritakan pernah secara misterius 'terbang' atau seperti digendong oleh sosok tak kasat mata yang tidak diketahui asalnya." },
+            { chapter: "Bab 1: Perkenalan", text: "Karena rentetan peristiwa pasca meninggalnya sang ayah, Nata akhirnya dibawa oleh kakek dan neneknya ke Jakarta untuk dibesarkan sejak tahun 2005. Di kota metropolitan inilah ia mulai mengenal realitas kehidupan sesungguhnya, jauh dari tanah kelahirannya.", explanation: "Pertanyaan: Bagaimana dengan kondisi mamanya Nata saat itu? Sang ibu terpaksa kembali ke Jakarta sendirian tanpa membawa Nata, berjuang memeras keringat demi urusan mencari pekerjaan nafkah hidup." },
+            { chapter: "Bab 2: Cerita Kehidupan Dimulai", text: "Waktu bergulir, Nata bertumbuh semakin besar dan mulai mengenyam bangku sekolah dasar di SDN 04 Pulogadung. Selama masa sekolah tersebut, ia terkenal sebagai anak yang cukup nakal. Meski begitu, ia punya impian dan tekad yang kuat: 'Jika sudah besar nanti aku akan menjadi seorang pilot, dan hobi utamaku menjadi pemain sepak bola!' " },
+            { chapter: "Bab 2: Cerita Kehidupan Dimulai", text: "Akan tetapi, persyaratan utama menjadi pilot sirna seketika saat ia menginjak kelas 5 SD. Nata mengalami kecelakaan kecil akibat terjatuh di lantai, berakibat gigi bagian tengahnya patah dan berbentuk menyerupai bulan sabit. Kecewa karena impian pilotnya pupus akibat kondisi fisik gigi, ia tidak lantas patah arang. Ia langsung mengalihkan impiannya untuk menjadi kiper sepak bola terkenal, terinspirasi oleh ketangguhan Petr Čech, kiper legendaris klub Chelsea. Ia giat berlatih tanpa kenal lelah, namun langkahnya sempat goyah dan putus asa karena merasa gagal akibat postur tubuhnya yang cenderung kecil dan kurang tinggi saat itu." },
+            { chapter: "Bab 2: Cerita Kehidupan Dimulai", text: "Saat menginjak bangku kelas 7 SMP, Nata mulai beralih mengasah kemampuannya bermain Futsal. Di posisi baru ini ia terbukti sangat berpotensi menjadi penjaga gawang yang tangguh karena refleksnya luar biasa lincah. Namun, ia kerap melakukan kesalahan akibat terlalu sering bermain handphone hingga matanya menderita minus. Puncaknya di kelas 9 SMP, saat turnamen futsal terakhir yang menjadi impian besarnya untuk menyabet gelar juara sebelum lulus sekolah tiba, harapan itu musnah total. Saat berlatih keras menjelang hari H turnamen, Nata mengalami cedera patah tulang kaki disertai gangguan pencernaan akut, memaksanya batal mengikuti kompetisi bergengsi itu." },
+            { chapter: "Bab 3: Masalah Ekonomi", text: "Ujian berlanjut setelah lulus SMP; Nata gagal melangkah ke SMA negeri impiannya. Padahal, Nata tergolong anak yang sangat pintar, khususnya dalam mata pelajaran matematika. Meski gagal masuk negeri, ia tetap melanjutkan pendidikan ke sebuah SMK swasta di daerah Jakarta Timur. Sekolah tersebut benar-benar menguji mentalnya karena lingkungan yang keras dan sangat minim murid wanita. Namun karena tuntutan biaya bulanan yang tinggi sedangkan ekonomi keluarganya tak mencukupi, Nata mengambil keputusan besar: keluar dari sekolah dan memilih bekerja. Menghadapi dunia kerja kasar tentu tidak mudah bagi anak seumurannya, namun ambisinya begitu membara demi membantu perekonomian keluarga." },
+            { chapter: "Bab 3: Masalah Ekonomi", text: "Banyak orang luar mungkin bertanya-tanya mengenai kondisi internal keluarganya sehingga seorang anak usia sekolah harus menanggung beban seberat ini. Nata memendam keadaan tersebut rapat-rapat, namun ia tahu langkah nekat keluar sekolah ini harus diambil demi kelangsungan hidup mereka.", explanation: "Pertanyaan: Memangnya ke mana orang tua dan bagaimana kondisi kakek Nata? Orang tua Nata kini hanya tersisa sang ibu, dan hubungan mereka tidak terlalu dekat. Sementara sang kakek hanya bekerja serabutan sebagai biro jasa yang mendapatkan bayaran tak menentu jika ada proyek pekerjaan saja." },
+            { chapter: "Bab 4: Perjalanan Karir Nata", text: "Langkah awal setelah putus sekolah membawa Nata bekerja sebagai pencuci motor dengan upah seadanya, yakni 700 ribu rupiah per bulan. Pekerjaan melelahkan ini ia jalani selama 4 bulan saja. Tak lama berselang, peluang baru datang saat seseorang memercayai Nata untuk mengelola dan membersihkan sebuah gudang pabrik tua yang kosong pada tahun 2020 dengan gaji 1,5 juta rupiah. Nominal itu sejatinya hanya cukup untuk biaya makannya sehari-hari. Hebatnya, Nata menjalani tugas tersebut dengan sangat rajin, bahkan rela tidur di dalam pabrik kosong itu demi menghemat ongkos." },
+            { chapter: "Bab 4: Perjalanan Karir Nata", text: "Kerja keras di pabrik selama 5 bulan membuka jalan rezeki baru; Nata diterima menjadi kurir di sebuah toko daging dengan bayaran mencapai 3,5 juta rupiah per bulan—sebuah nominal yang membuatnya luar biasa bersyukur. Di sana, tugas Nata tidak cuma mengantar barang, ia juga sigap membantu packing serta mengangkat daging-daging berat yang melelahkan fisik. Ia menekuninya penuh komitmen selama 1 tahun penuh.", explanation: "Pertanyaan: Waktu kerja di toko daging kan belum punya motor, lalu tinggal di mana sehabis dari gudang pabrik? Tuhan mempertemukan Nata dengan bos yang sangat baik, sehingga ia difasilitasi sepeda motor operasional kantor. Pasca keluar dari gudang pabrik, Nata sempat tinggal beberapa waktu bersama kakek dan neneknya, namun ia juga sesekali memilih tidur di tempat kerjanya." },
+            { chapter: "Bab 5: Perjalanan yang Nekat", text: "Setelah memutuskan keluar dari toko daging, garis takdir mempertemukan Nata dengan seorang warga negara keturunan China yang sudah menetap lama saat ia sedang bermain menikmati suasana di kawasan PIK 2. Tanpa diduga, pengusaha tersebut mendadak menawari Nata posisi sebagai Office Boy (OB) di perusahaannya. Walaupun profesi Office Boy sering kali dipandang sebelah mata oleh sebagian orang, Nata tetap teguh pada pendiriannya untuk mengambil kesempatan tersebut demi masa depan." },
+            { chapter: "Bab 5: Perjalanan yang Nekat", text: "Di perusahaan baru tersebut, Nata disambut dengan suasana hangat dan diperlakukan setara tanpa ada diskriminasi. Ia dikenal sebagai pemuda yang selalu ceria, memiliki jiwa sosial tinggi, mudah bergaul dengan siapa saja, berambisi kuat, serta tidak memiliki rasa malu untuk terus belajar demi merajut mimpinya menjadi penulis terkenal yang mampu memotivasi dunia.", explanation: "Pertanyaan: Mengapa orang China tersebut tiba-tiba menawarkan pekerjaan kepada Nata? Jawabannya karena aksi spontan Nata. Sang bos memperhatikan jiwa pencinta lingkungan Nata; di saat lingkungan sekitar dipenuhi tumpukan sampah berserakan dan orang lain acuh, Nata refleks tergerak memungut sampah itu dan membuangnya ke tempat yang benar." },
+            { chapter: "Bab 6: Berambisi Ingin Cepat Kaya", text: "Melihat dedikasi dan kinerja cemerlang Nata selama menjadi OB, sang bos melayangkan penawaran emas: 'Apakah kamu ingin melanjutkan sekolah lagi?' Nata terkejut dan menjawab dengan rasa bangga: 'Saya sangat mau, Bos!' Namun, ada satu syarat mutlak: ia harus ikut bosnya memulai proyek bisnis baru di luar negeri, dan seluruh biaya akomodasi serta kebutuhan hidupnya akan ditanggung sepenuhnya. Tanpa pikir panjang, Nata langsung mengiyakan ajakan dari bosnya yang dikenal sangat royal itu." },
+            { chapter: "Bab 6: Berambisi Ingin Cepat Kaya", text: "Selama 3 bulan menjelang keberangkatan, Nata dilatih secara intensif dan diberi pesan mendalam oleh bosnya: 'Jika sudah sampai di sana, kamu jangan sekali-kali mengikuti pikiran kotormu.' Nata berjanji patuh. Di usianya yang baru menginjak 17 tahun, paspor resmi di tangan. Roda pesawat pun menerbangkan Nata melintasi awan menuju negara tujuan bersama sang bos dan tiga rekan bisnisnya.", explanation: "Pertanyaan & Fakta: Ke mana Nata pergi dan mengapa tiba-tiba diajak? Nata adalah tipe orang yang haus ilmu; selama menjadi OB ia selalu aktif belajar dari teman-teman di kantor tentang bagaimana cara kerja pegawai kantoran. Detail negara tujuannya dibahas pada bab selanjutnya." },
+            { chapter: "Bab 7: Sampai di Negara Tujuan", text: "Pesawat akhirnya mendarat di Filipina. Di sana, Nata mengikuti serangkaian pelatihan marketing khusus di bidang manajemen properti internasional. Berbekal otak yang cerdas, Nata hanya memerlukan waktu 3 bulan untuk menguasai seluruh sistem operasional yang rumit di sana. Hebatnya, ia melakukan itu semua dari nol tanpa modal kecakapan awal bahasa Inggris maupun Mandarin, dibantu oleh fasilitas penerjemah khusus dari kantor." },
+            { chapter: "Bab 7: Sampai di Negara Tujuan", text: "Puas melihat kinerja apik Nata, sang bos mendelegasikannya untuk memperluas ekspansi jaringan properti ke negara Thailand. Di Thailand, ia berjuang sebatang kara tanpa kenalan. Namun hanya dalam waktu 4 bulan, ia sukses mencetak prestasi melampaui target penyewaan kantor. Keberhasilan masif tersebut memikat perhatian rekan bisnis bosnya, seorang pengusaha asal China bernama OTM yang langsung merekrut Nata lewat kontrak kerja eksklusif baru .", explanation: "Disclaimer & Fakta Lapangan: Di Filipina, Nata bertugas mempromosikan penyewaan gedung komersial yang terafiliasi dengan jaringan industri hiburan dan perjudian kasino online milik ayah bosnya yang merupakan konglomerat China. Pertanyaan mengenai apakah Nata kemudian terjerumus menjadi admin judi online terjawab pada bab berikutnya." },
+            { chapter: "Bab 8: Bekerja Bersama Bos Baru", text: "Kenyataan pahit langsung menampar Nata sesaat setelah menandatangani kontrak bersama bos OTM. Ia ternyata dipindahkan untuk bekerja sebagai admin utama judi online di wilayah perbatasan terpencil di negara Myanmar—sebuah pekerjaan yang sangat bertolak belakang dengan nuraninya. Nata harus melewati proses tes kualifikasi terlebih dahulu, dan berkat modal komunikasi cemerlangnya, ia lolos dengan sangat mudah." },
+            { chapter: "Bab 8: Bekerja Bersama Bos Baru", text: "Di balik pencapaian target kerja mingguannya, Nata menyimpan kekecewaan berat. Ia baru mengetahui fakta bahwa saat proses pengalihan kontrak, bos pertamanya secara diam-diam meminta biaya transfer (fee) sebesar $5.000 kepada bos baru tanpa sepengetahuannya. Merasa dikhianati dan dijual, Nata terpaksa bekerja mati-matian di sana di bawah ancaman industri hitam .", explanation: "Disclaimer & Kondisi Ekstrem: Nata mengakui dirinya pintar namun sedikit naif dan terlalu gampang memercayai orang baru. Wilayah operasinya di pelosok Myanmar (2021-2022) adalah pusat sindikat uang gelap. Pekerja yang gagal memenuhi target diancam siksaan fisik berat hingga penjualan organ di pasar gelap. Nata selamat dari siksaan karena targetnya selalu tercapai, walau ia teriris melihat pekerja negara lain disiksa di depan matanya sendiri." },
+            { chapter: "Bab 9: Pilihan yang Baik", text: "Melihat konsistensi kerja Nata yang selalu mengamankan target di atas rata-rata, pihak manajemen memberikan dua opsi masa depan: naik jabatan menjadi Team Leader operasional judi online di Myanmar, atau berpindah ke Kamboja untuk mengelola jaringan scamming internasional dengan syarat wajib mengikuti pelatihan sistem teknologi informasi di Vietnam selama 3 bulan." },
+            { chapter: "Bab 9: Pilihan yang Baik", text: "Didorong rasa penasaran dan kabar bahwa fasilitas operasional di Kamboja jauh lebih menjanjikan secara kenyamanan infrastruktur, Nata memilih opsi kedua. Ia dikirim ke Vietnam untuk belajar memahami alur arsitektur jaringan informasi digital, sebelum akhirnya diterbangkan ke Kamboja untuk memimpin kantor cabang baru di Crown Building (Gedung Tasun) di pusat kota .", explanation: "Disclaimer & Pertanyaan: Vietnam dikenal sebagai gudangnya para programer cerdas yang mendesain arsitektur sistem aplikasi digital skala global. Selama merantau bertahun-tahun di lingkungan ekstrem ini, apakah keluarga mencarinya? Nata pergi secara legal, berpamitan resmi, dan rutin memberi kabar ke tanah air, terutama tiap momen Lebaran." },
+            { chapter: "Bab 10: Bekerja di Penipuan", text: "Di Kamboja, posisi Nata terhitung sangat mapan karena memegang kepercayaan penuh dari pemilik modal untuk membangun fondasi manajemen dari nol. Ia berkolaborasi erat dengan HRD profesional untuk menyaring kandidat terbaik. Bersama partner teknisnya dari Vietnam, Nata merumuskan ide berani: membangun infrastruktur 10 website platform hiburan digital serentak dengan fokus sasaran pasar di negara Brazil." },
+            { chapter: "Bab 10: Bekerja di Penipuan", text: "Formula sistem manajemen mutakhir yang dirancang Nata terbukti meledak sukses di pasaran global. Tepat pada tanggal 23 November 2023, operasional resmi dijalankan. Hanya dalam kurun waktu satu minggu pertama sejak resmi mengudara, jaringan platform yang ia kendalikan berhasil meraup omzet fantastis senilai jutaan dolar Amerika.", explanation: "Disclaimer Pasar & Aturan Nasionalisme: Mengapa memilih pasar Brazil? Berdasarkan riset bersama bos besar di Kamboja, tren pasar judi online di Amerika Selatan sedang berada di puncak keemasan. Kantor Nata diperkuat oleh 12 staf Vietnam, 20 pekerja Kamboja, dan 5 pengawas China. Hebatnya, Nata membuat aturan ketat untuk TIDAK mempekerjakan satu pun warga Indonesia agar saudara sebangsanya tidak hancur di industri keras ini." },
+            { chapter: "Bab 11: Membuahkan Hasil", text: "Atas pencapaian omzet jutaan dolar tersebut, Nata mendapat apresiasi tertinggi dari pemilik modal dan langsung dipromosikan menjadi Team Leader ganda sekaligus tangan kanan utama untuk mengekspansi beberapa kantor cabang baru di gedung yang sama. Para pengusaha asal China berdatangan secara khusus demi mempelajari formulasi sistem milik Nata. Bisnis berisiko ini menuntut kecerdasan tinggi, karena jika tidak ada peningkatan operasional, posisinya bisa terancam." },
+            { chapter: "Bab 11: Membuahkan Hasil", text: "Karier Nata tidak selalu mulus; ia sempat mengalami kerugian besar saat mencoba mengekspansi sayap bisnis ke negara India karena ditipu mentah-mentah oleh jaringan influencer lokal setempat. Namun, mental pantang menyerahnya bangkit dan langsung meluncurkan proyek baru dengan target pasar Pakistan yang berakhir sukses besar .", explanation: "Informasi Tambahan: Sebagai bonus loyalitas kerja, Nata sesekali membawa timnya berlibur menikmati fasilitas KTV premium di Kamboja. Lalu bagaimana dengan sekolahnya? Nata tetap menempuh pendidikan jarak jauh secara online, dan bos pertamanya di Indonesia yang sangat menghargai jasanya secara sukarela mencarikan sekolah formal yang bersedia memproses ujian akhir Nata agar ia resmi memegang ijazah kelulusannya." },
+            { chapter: "Bab 12: Akhir Cerita", text: "Lima tahun lamanya masa muda Nata habis terserap dalam ketatnya persaingan dunia kerja internasional di pusaran industri kelam. Nata mulai didera kelelahan mental yang mendalam. Ia menyadari tekad awalnya merantau murni hanya demi menyelamatkan ekonomi keluarga dan mencari pengalaman hidup, bukan untuk menetap selamanya di jalan abu-abu ini. Nata membulatkan tekad menghadap bosnya untuk mengajukan pengunduran diri secara baik-baik." },
+            { chapter: "Bab 12: Akhir Cerita", text: "Keputusan itu mengejutkan manajemen, sebab Nata sudah dianggap seperti anak kandung sendiri oleh sang pemilik modal karena kejujuran serta loyalitas tingginya selama bertahun-tahun. Dengan penuh rasa hormat Nata berpamitan: 'Saya akan baik-baik saja di Indonesia, Bos. Saya akan selalu mengingat semua kebaikanmu di sini.' Tepat pada bulan Mei tahun 2025, Nata menghirup kembali udara tanah air tercinta, Indonesia, kembali berkumpul bersama keluarga serta teman-teman masa kecil yang begitu lama ia rindukan. (Tamat)", explanation: "Mengapa ceritanya semakin singkat di bagian akhir? Karena seluruh rahasia dan petualangan mendalam berikutnya akan dikupas tuntas pada Next Episode / Season 2! Hubungkan akun sosial media Anda untuk mengikuti kelanjutannya." },
+            { chapter: "Pesan Bijak dari Nata", text: "Kejarlah impianmu setinggi mungkin dan jangan pernah mudah putus asa menghadapi hantaman keras kehidupan! Masih ada sejuta peluang berharga yang sedang menantimu di depan sana jika kamu mau terus berusaha dan bergerak jujur.", isPesam: true },
+            { chapter: "Pesan Peringatan Keras Nata", text: "Bagi kalian yang sampai hari ini masih terjebak dalam lingkaran hitam perjudian: Pikirkan baik-baik masa depanmu! Ingat, tidak akan pernah ada sejarahnya orang bisa kaya raya secara instan murni dari hasil berjudi.", warning: "Jika kondisi ekonomimu sedang terpuruk atau miskin, jalan keluarnya adalah bekerja keras dan menabung, bukan malah nekat bertaruh di judi online! Sadarlah, sistem judi didesain hanya untuk orang kaya yang mencari kesenangan hiburan semata, bukan jalan pintas bagi orang susah untuk mencari kemenangan hidup. Uangmu habis, masa depanmu hancur!" }
+        ];
+
+        let currentIndex = 0;
+        const totalPages = storyData.length;
+        let followUnlocked = false;
+
+        const chapterTitleEl = document.getElementById("chapter-title");
+        const pageIndicatorEl = document.getElementById("page-indicator");
+        const storyTextEl = document.getElementById("story-text");
+        const bgCoreEl = document.getElementById("bg-core");
+        const btnPrevEl = document.getElementById("btn-prev");
+        const btnNextEl = document.getElementById("btn-next");
+        const btnExplainEl = document.getElementById("btn-explain");
+        const warningBoxEl = document.getElementById("warning-box");
+        const warningTextEl = document.getElementById("warning-text");
+        const progressBarEl = document.getElementById("progress-bar");
+        const infoBadgeEl = document.getElementById("info-badge");
+        const infoContentEl = document.getElementById("info-content");
+        const modalEp2El = document.getElementById("modal-ep2");
+
+        function updatePage() {
+            const currentStory = storyData[currentIndex];
+
+            // Teks & Animasi
+            storyTextEl.style.opacity = "0";
+            setTimeout(() => {
+                storyTextEl.innerHTML = currentStory.text;
+                storyTextEl.style.opacity = "1";
+            }, 100);
+
+            chapterTitleEl.innerText = currentStory.chapter;
+            pageIndicatorEl.innerText = `${currentIndex + 1}/${totalPages}`;
+            progressBarEl.style.width = `${((currentIndex + 1) / totalPages) * 100}%`;
+
+            // Reset Sub-Panel Konten Tambahan
+            infoBadgeEl.classList.add("hidden");
+            if(currentStory.explanation) {
+                btnExplainEl.classList.remove("hidden");
+            } else {
+                btnExplainEl.classList.add("hidden");
+            }
+
+            // Warning Box Judi
+            if(currentStory.warning) {
+                warningBoxEl.classList.remove("hidden");
+                warningTextEl.innerText = currentStory.warning;
+            } else {
+                warningBoxEl.classList.add("hidden");
+            }
+
+            // Tombol Navigasi Lanjut / Tamat
+            btnPrevEl.disabled = (currentIndex === 0);
+            if (currentIndex === totalPages - 1) {
+                btnNextEl.innerText = "MENU EPISODE 2";
+                btnNextEl.classList.replace("from-amber-500", "from-teal-500");
+            } else {
+                btnNextEl.innerText = "LANJUT →";
+                if(btnNextEl.classList.contains("from-teal-500")) {
+                    btnNextEl.classList.replace("from-teal-500", "from-amber-500");
+                }
+            }
+        }
+
+        function changePage(direction) {
+            // Jika berada di halaman terakhir dan menekan Lanjut/Menu Episode 2
+            if(currentIndex === totalPages - 1 && direction === 1) {
+                modalEp2El.classList.remove("hidden");
+                return;
+            }
+            currentIndex += direction;
+            if(currentIndex < 0) currentIndex = 0;
+            updatePage();
+        }
+
+        function toggleExplanation() {
+            const currentStory = storyData[currentIndex];
+            if(currentStory.explanation) {
+                infoBadgeEl.classList.toggle("hidden");
+                infoContentEl.innerText = currentStory.explanation;
+            }
+        }
+
+        // FUNGSI AUTOMATION UNTUK KIRIM KRITIK & SARAN VIA EMAIL CLIENT (GMAIL PRE-FILLED)
+        function sendFeedback(event) {
+            event.preventDefault();
+            const message = document.getElementById("feedback-input").value;
+            const emailTarget = "p18024703@gmail.com";
+            const subject = encodeURIComponent("Kritik & Saran Pembaca Web Esok Kita Akan Kembali");
+            const body = encodeURIComponent("Halo Jose Natanael,\n\nBerikut kritik/saran saya mengenai Novel Visual Anda:\n\n" + message);
+            
+            // Membuka Aplikasi Gmail secara otomatis dengan isi yang sudah terisi terformat sempurna
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${emailTarget}&su=${subject}&body=${body}`, '_blank');
+            
+            document.getElementById("feedback-input").value = "";
+            alert("Terima kasih! Browser akan membuka tab baru untuk mengirimkan pesan saran langsung ke email Jose Natanael.");
+        }
+
+        function closeModal() {
+            modalEp2El.classList.add("hidden");
+        }
+
+        function unlockFollowStep() {
+            followUnlocked = true;
+            alert("Terima kasih sudah mem-follow Instagram @Nath4nahel_! Data Anda berhasil dicatat oleh sistem aplikasi untuk pembukaan kunci otomatis Episode 2 mendatang.");
+        }
+
+        // Efek Interaktif Parallax Gerakan Kamera 3D Ringan
+        document.addEventListener("mousemove", (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.015;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.015;
+            bgCoreEl.style.transform = `scale(1.2) translate(${moveX}px, ${moveY}px)`;
+        });
+
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (event) => {
+                const tiltX = Math.min(Math.max(event.gamma, -12), 12) * 0.3;
+                const tiltY = Math.min(Math.max(event.beta - 45, -12), 12) * 0.3;
+                bgCoreEl.style.transform = `scale(1.2) translate(${tiltX}px, ${tiltY}px)`;
+            }, true);
+        }
+
+        window.onload = updatePage;
+    </script>
+</body>
+</html>
